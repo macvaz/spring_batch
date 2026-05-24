@@ -1,0 +1,4 @@
+operation_id,owner_id,entity_id,block_month,blocked_amount,currency,block_reason,block_status,external_reference
+OP-INVALID-001,UNKNOWN-OWNER,BANK-001,2026-01,15000.00,EUR,Unknown credit owner,ACTIVE,EXT-ERR-001
+OP-INVALID-002,12345678A,BANK-UNKNOWN,2026-01,8500.50,EUR,Unknown banking entity,ACTIVE,EXT-ERR-002
+OP-INVALID-003,12345678A,BANK-001,not-a-month,not-a-number,EUR,Invalid month and amount,BAD_STATUS,EXT-ERR-003

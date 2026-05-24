@@ -1,0 +1,2 @@
+operation_id,owner_id,entity_id,block_month,blocked_amount,currency,block_reason,block_status,external_reference
+OP-2026-001,12345678A,BANK-001,2026-03,500.00,EUR,Duplicate operation id,ACTIVE,EXT-DUP-001

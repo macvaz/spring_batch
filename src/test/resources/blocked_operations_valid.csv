@@ -1,0 +1,4 @@
+operation_id,owner_id,entity_id,block_month,blocked_amount,currency,block_reason,block_status,external_reference
+OP-2026-001,12345678A,BANK-001,2026-01,15000.00,EUR,Monthly administrative credit block,ACTIVE,EXT-BLK-001
+OP-2026-002,87654321B,BANK-002,2026-01,8500.50,EUR,Joint account hold pending review,ACTIVE,EXT-BLK-002
+OP-2026-003,87654322C,BANK-003,2026-02,8500.50,EUR,Co-owner block aligned with joint filing,ACTIVE,EXT-BLK-003

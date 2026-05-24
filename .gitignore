@@ -1,0 +1,13 @@
+target/
+build/
+.gradle/
+.m2/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+data/admin-processing*
+data/processed/
+data/failed/
+!data/incoming/blocked_operations.csv
