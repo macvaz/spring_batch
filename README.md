@@ -261,6 +261,8 @@ Spring runs `dimensional-data.sql` after Hibernate creates the schema (`defer-da
 
 H2 console: http://localhost:8080/h2-console — JDBC URL `jdbc:h2:file:./data/admin-processing`.
 
+Dimensional seed runs **only when the database is empty** (first start). Later restarts reuse the file DB and do not re-insert seed rows. To reset: stop the app and delete `./data/admin-processing.mv.db` (and `.trace.db` if present).
+
 `MockingExternalServicesIntegrationTest` runs `electronicProcessingStep` on input documents seeded by `dimensional-data.sql` (no submission CSV).
 
 Blocked-operation CSV fixtures (`src/test/resources/`):
