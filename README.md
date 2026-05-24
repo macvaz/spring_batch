@@ -97,7 +97,45 @@ Requirements: Java 17+
 | GET | `/api/credit-operations/blocked/by-owner/{ownerId}` | Blocks for a credit owner |
 | GET | `/api/credit-operations/blocked?status=ACTIVE` | List blocks (optional status filter) |
 
-H2 console: http://localhost:8080/h2-console (JDBC URL from `application.yml`).
+H2 console ( **`local`** profile only): http://localhost:8080/h2-console — JDBC URL `jdbc:h2:file:./data/admin-processing`.
+
+### Spring profiles
+
+| Profile | Database | Typical use |
+|---------|----------|-------------|
+| `local` | H2 file + dimensional SQL seed | Local development (default when no profile is set) |
+| `test` | **Oracle** | Deployed TEST environment |
+| `pre` | **Oracle** | Deployed PRE environment |
+
+JUnit tests always use in-memory H2 via `src/test/resources/application.yml` (they do **not** activate the `test` Spring profile).
+
+**Oracle (`test` / `pre`)** — set credentials and connection, then run:
+
+```bash
+export SPRING_PROFILES_ACTIVE=test
+export ORACLE_USER=app_user
+export ORACLE_PASSWORD=secret
+# optional for test profile:
+export ORACLE_HOST=oracle-test.example
+export ORACLE_PORT=1521
+export ORACLE_SERVICE=ORCLPDB1
+
+./gradlew bootRun
+```
+
+| Variable | `test` profile | `pre` profile |
+|----------|----------------|---------------|
+| `ORACLE_USER` | required | required |
+| `ORACLE_PASSWORD` | required | required |
+| `ORACLE_HOST` | optional (default `localhost`) | required |
+| `ORACLE_SERVICE` | optional (default `ORCLPDB1`) | required |
+| `ORACLE_PORT` | optional (default `1521`) | optional (default `1521`) |
+| `SPRING_SQL_INIT_MODE` | optional (`never` default; set `always` once to load `dimensional-data-oracle.sql` on an empty schema) | not used (`never`) |
+
+Profile behaviour:
+
+- **`test`**: `ddl-auto: update`, Spring Batch schema initialized, H2 console disabled.
+- **`pre`**: `ddl-auto: validate` (schema owned by migrations/DBA), no SQL seed, H2 console disabled.
 
 ## External integrations
 
@@ -213,13 +251,15 @@ Integration tests use an in-memory H2 database pre-loaded from:
 
 Spring runs `dimensional-data.sql` after Hibernate creates the schema (`defer-datasource-initialization: true`).
 
-**Local H2 with the same dimensional data** (file-based, H2 console enabled):
+**Local H2** uses profile `local` (active by default via `spring.profiles.default`):
 
 ```bash
-./gradlew bootRun --args='--spring.profiles.active=dev'
+./gradlew bootRun
+# or explicitly:
+./gradlew bootRun --args='--spring.profiles.active=local'
 ```
 
-H2 console: http://localhost:8080/h2-console — JDBC URL `jdbc:h2:file:./data/dev-admin-processing`.
+H2 console: http://localhost:8080/h2-console — JDBC URL `jdbc:h2:file:./data/admin-processing`.
 
 `MockingExternalServicesIntegrationTest` runs `electronicProcessingStep` on input documents seeded by `dimensional-data.sql` (no submission CSV).
 

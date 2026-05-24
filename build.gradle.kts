@@ -32,6 +32,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     runtimeOnly("com.h2database:h2")
+    runtimeOnly("com.oracle.database.jdbc:ojdbc11")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")

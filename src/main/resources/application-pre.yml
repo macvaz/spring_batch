@@ -1,0 +1,30 @@
+# Deployed PRE (pre-production) environment — Oracle database.
+# Activate: SPRING_PROFILES_ACTIVE=pre
+# Required env: ORACLE_HOST, ORACLE_SERVICE, ORACLE_USER, ORACLE_PASSWORD
+# Optional: ORACLE_PORT (default 1521)
+
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@//${ORACLE_HOST}:${ORACLE_PORT:1521}/${ORACLE_SERVICE}
+    driver-class-name: oracle.jdbc.OracleDriver
+    username: ${ORACLE_USER}
+    password: ${ORACLE_PASSWORD}
+
+  h2:
+    console:
+      enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
+
+  sql:
+    init:
+      mode: never
+
+  batch:
+    jdbc:
+      initialize-schema: always

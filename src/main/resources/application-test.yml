@@ -1,0 +1,32 @@
+# Deployed TEST environment — Oracle database.
+# Activate: SPRING_PROFILES_ACTIVE=test
+# Required env: ORACLE_USER, ORACLE_PASSWORD
+# Optional: ORACLE_HOST (default localhost), ORACLE_PORT (default 1521), ORACLE_SERVICE (default ORCLPDB1)
+# Optional seed on empty schema: SPRING_SQL_INIT_MODE=always
+
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@//${ORACLE_HOST:localhost}:${ORACLE_PORT:1521}/${ORACLE_SERVICE:ORCLPDB1}
+    driver-class-name: oracle.jdbc.OracleDriver
+    username: ${ORACLE_USER}
+    password: ${ORACLE_PASSWORD}
+
+  h2:
+    console:
+      enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
+
+  sql:
+    init:
+      mode: ${SPRING_SQL_INIT_MODE:never}
+      data-locations: classpath:data/dimensional-data-oracle.sql
+
+  batch:
+    jdbc:
+      initialize-schema: always
