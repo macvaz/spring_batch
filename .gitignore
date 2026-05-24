@@ -8,6 +8,11 @@ build/
 .project
 .settings/
 data/admin-processing*
-data/processed/
-data/failed/
-!data/incoming/blocked_operations.csv
+
+# Keep folder structure in git; ignore runtime files inside
+data/incoming/*
+!data/incoming/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/failed/*
+!data/failed/.gitkeep

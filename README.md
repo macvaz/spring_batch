@@ -59,7 +59,52 @@ operation_id,owner_id,entity_id,block_month,blocked_amount,currency,block_reason
 | `entity_id` | `banking_entity.external_code` |
 | `operation_id` | unique in `credit_operation_blocked` |
 
-Sample: `data/incoming/blocked_operations.csv`
+## Data directory
+
+Runtime and sample files live under `./data/` (project root, same place you run `./gradlew bootRun`).
+
+```
+data/
+├── samples/                    # Example CSVs tracked in git
+│   └── blocked_operations.csv
+├── incoming/                   # Drop zone for the file watcher / upload API
+│   └── .gitkeep
+├── processed/                  # Successfully imported files (moved here)
+│   └── .gitkeep
+├── failed/                     # Rejected files (validation errors)
+│   └── .gitkeep
+└── admin-processing.mv.db      # Local H2 database (created at runtime, not in git)
+```
+
+Paths are configured in `application.yml` (`app.storage.*`). Override only if you change that config.
+
+| Path | In git? | Purpose |
+|------|---------|---------|
+| `data/samples/` | Yes | Reference CSV aligned with dimensional seed data (`12345678A`, `BANK-001`, …). Safe to commit. |
+| `data/incoming/` | Folder only (`.gitkeep`) | Place **`blocked_operations.csv`** here for local testing. Contents are ignored by git. |
+| `data/processed/` | Folder only | Watcher moves files here after a successful import. |
+| `data/failed/` | Folder only | Watcher moves files here when validation fails. |
+| `data/admin-processing*` | No | File-based H2 store for the **`local`** profile. Delete to reset the local database. |
+
+### Local testing with `bootRun`
+
+```bash
+mkdir -p data/incoming
+cp data/samples/blocked_operations.csv data/incoming/blocked_operations.csv
+./gradlew bootRun
+```
+
+The watcher polls `data/incoming/` every 15 seconds. You can also upload without copying to incoming:
+
+```bash
+curl -F "file=@data/samples/blocked_operations.csv" http://localhost:8080/api/files/upload
+```
+
+After processing, check `data/processed/` or `data/failed/` — the file will no longer be in `incoming/`.
+
+### Git and empty folders
+
+Git does not track empty directories. `incoming/`, `processed/`, and `failed/` each contain a **`.gitkeep`** placeholder so the layout is committed; `.gitignore` ignores all other files inside those folders (`data/incoming/*` with `!data/incoming/.gitkeep`, and the same pattern for `processed/` and `failed/`).
 
 ## Batch pipeline (internal)
 
@@ -76,7 +121,9 @@ Requirements: Java 17+
 
 ### Ingest options
 
-1. **Drop folder** — copy `blocked_operations.csv` into `./data/incoming/` (polled every 15s).
+See [Data directory](#data-directory) for folder layout. In short:
+
+1. **Drop folder** — copy `blocked_operations.csv` into `data/incoming/` (polled every 15s).
 2. **REST upload** — `POST /api/files/upload` with multipart field `file` (must be named `blocked_operations.csv`).
 
 ### Query API
@@ -165,7 +212,7 @@ Expected endpoints:
 
 ```bash
 # Start app, then upload sample CSV
-curl -F "file=@data/incoming/blocked_operations.csv" http://localhost:8080/api/files/upload
+curl -F "file=@data/samples/blocked_operations.csv" http://localhost:8080/api/files/upload
 
 # Fetch output for a submission
 curl http://localhost:8080/api/documents/inputs/by-code/DOC-2026-0001
